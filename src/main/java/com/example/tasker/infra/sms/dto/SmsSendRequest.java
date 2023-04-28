@@ -12,7 +12,9 @@ import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Getter
 @Builder
@@ -23,6 +25,8 @@ public class SmsSendRequest {
 
 
     @NotBlank(message = "전화번호를 입력해 주세요.")
+    @Digits(integer = 13, fraction = 0, message = "전화번호를 확인하여 주세요.")
+    @Size(min = 11, max = 13, message = "전화번호를 확인하여 주세요.")
     @ApiModelProperty(notes = "전화번호를 입력해 주세요.")
     private String phoneNum;
 
@@ -34,13 +38,11 @@ public class SmsSendRequest {
                 .build();
     }
 
-    public static User toEntity(User user) {
+    public static User toEntity(User user, SmsSendRequest smsSendRequest) {
         final BeanFactory beanFactory = new AnnotationConfigApplicationContext(JasyptConfig.class);
         StringEncryptor stringEncryptor = beanFactory.getBean("jasyptEncyptor", StringEncryptor.class);
-        return User.builder()
-                .phoneNumberSha(user.getPhoneNumberSha())
-                .phoneNumber(stringEncryptor.encrypt(user.getPhoneNumber()))
-                .build();
+        user.setPhoneNumber(stringEncryptor.encrypt(smsSendRequest.getPhoneNum()));
+        return user;
 
     }
 

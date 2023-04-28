@@ -4,8 +4,6 @@ import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Entity
@@ -33,10 +31,8 @@ public class User extends BaseTimeEntity {
     @Column(name = "phone_number_sha")
     private String phoneNumberSha;
 
-    @OneToMany(mappedBy = "user")
-    @Builder.Default
-    private List<UserRefreshToken> userRefreshTokens = new ArrayList<>();
-
+    @OneToOne(mappedBy = "user")
+    private UserRefreshToken userRefreshToken;
 
 
 }

@@ -1,6 +1,8 @@
 package com.example.tasker.global.jwt.service;
 
+import com.example.tasker.domain.user.exception.NotFoundUserException;
 import com.example.tasker.domain.user.repository.UserRefreshTokenRepository;
+import com.example.tasker.domain.user.repository.UserRepository;
 import com.example.tasker.global.jwt.exception.ExpireRefreshException;
 import com.example.tasker.global.jwt.exception.NotFoundJwtException;
 import com.example.tasker.global.jwt.secret.SecretKey;
@@ -24,9 +26,9 @@ import java.util.Date;
 public class JwtServiceImpl implements JwtService {
 
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final UserRepository userRepository;
     private final long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 2 * 1000L;   // 2시간
     private final long REFRESH_TOKEN_VALID_TIME  = 60 * 60 * 24 * 7 * 1000L;   // 1 달
-    private Long userId;
     @Value("${spring.jwt.access-key}")
     public String JWT_ACCESS_SECRET_KEY;
     @Value("${spring.jwt.refresh-key}")
@@ -87,7 +89,7 @@ public class JwtServiceImpl implements JwtService {
         }
         return accessToken;
     }
-
+    @Override
     public String resolveRefreshToken() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String refreshToken = request.getHeader("X-REFRESH-TOKEN");

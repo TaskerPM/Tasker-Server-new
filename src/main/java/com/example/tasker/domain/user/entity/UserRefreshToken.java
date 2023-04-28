@@ -22,10 +22,9 @@ public class UserRefreshToken extends BaseTimeEntity {
 
     private String userRefreshToken;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.tasker.global.config.swagger;
 
+import com.example.tasker.global.dto.ErrorResponse;
 import com.fasterxml.classmate.TypeResolver;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,7 +30,7 @@ public class SwaggerConfig {
 
     @Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.OAS_30)
                 .host("dev.taskerpm.shop")
                 .alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
                 .globalRequestParameters(Arrays.asList(
@@ -51,7 +52,10 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.example.tasker"))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .additionalModels(
+                        new TypeResolver().resolve(ErrorResponse.class)
+                );
 
 
     }
