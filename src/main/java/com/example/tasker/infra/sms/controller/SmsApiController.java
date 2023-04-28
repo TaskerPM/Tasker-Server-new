@@ -39,8 +39,10 @@ public class SmsApiController {
 
         String value = smsService.sendSms(smsSendRequest);
 
+
         return ResponseEntity.ok(SmsSendResponse.builder()
                 .value(value)
+                .message("발송이 완료되었습니다.")
                 .build());
     }
 
