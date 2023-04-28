@@ -11,4 +11,6 @@ import java.security.NoSuchAlgorithmException;
 public interface SmsService {
 
     String sendSms(SmsSendRequest smsSendRequest) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException;
+
+
 }
