@@ -24,8 +24,7 @@ public class WebMvcContextConfiguration implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/v1/sms/send",
                         "/v1/users/loginToken",
-                        "/v1/users/login",
-                        "/v1/users/join",
+                        "/v1/users/login-signup",
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/swagger-ui/**",

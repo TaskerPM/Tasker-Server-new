@@ -3,6 +3,7 @@ package com.example.tasker.domain.user.service;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.domain.user.entity.UserRefreshToken;
 import com.example.tasker.domain.user.repository.UserRefreshTokenRepository;
+import com.example.tasker.global.jwt.exception.ExpireRefreshException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,5 +23,16 @@ public class UserRefreshTokenServiceImpl implements UserRefreshTokenService{
         return userRefreshTokenRepository.save(userRefreshToken);
 
     }
+
+    @Override
+    public UserRefreshToken findByUser(User user) {
+        return userRefreshTokenRepository.findByUser(user).orElseGet(UserRefreshToken::new);
+    }
+
+    @Override
+    public UserRefreshToken findByRefreshToken(String userRefreshToken) {
+        return userRefreshTokenRepository.findByUserRefreshToken(userRefreshToken).orElseThrow(ExpireRefreshException::new);
+    }
+
 
 }
