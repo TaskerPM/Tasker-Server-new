@@ -1,6 +1,5 @@
 package com.example.tasker.global.jwt.service;
 
-import com.example.tasker.domain.user.exception.NotFoundUserException;
 import com.example.tasker.domain.user.repository.UserRefreshTokenRepository;
 import com.example.tasker.domain.user.repository.UserRepository;
 import com.example.tasker.global.jwt.exception.ExpireRefreshException;
@@ -12,12 +11,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -34,23 +36,38 @@ public class JwtServiceImpl implements JwtService {
     @Value("${spring.jwt.refresh-key}")
     public String JWT_REFRESH_SECRET_KEY;
 
+    private final String BLACKLIST_KEY = "blacklist:tokens";
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public String createAccessJwt(String numId) {
         Date now = new Date();
-        return Jwts.builder()
+        String accessToken = Jwts.builder()
+                .setId(UUID.randomUUID().toString())
                 .setHeaderParam("type", "jwt")
                 .claim("numId", numId)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_VALID_TIME))
                 .signWith(SignatureAlgorithm.HS256, SecretKey.JWT_ACCESS_SECRET_KEY)
                 .compact();
+        return accessToken;
     }
+
+    public void addToBlacklist(String token) {
+        redisTemplate.opsForValue().set(token, true, ACCESS_TOKEN_VALID_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean isBlacklisted(String token) {
+        Object result = redisTemplate.opsForValue().get(token);
+        return result != null && (boolean) result;
+    }
+
 
     @Override
     public String createRefreshJwt(String numId) {
         Date now = new Date();
         return Jwts.builder()
+                .setId(UUID.randomUUID().toString())
                 .setHeaderParam("type", "jwt")
                 .claim("numId", numId)
                 .setIssuedAt(now)

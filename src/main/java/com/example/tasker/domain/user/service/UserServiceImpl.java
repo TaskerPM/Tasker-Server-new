@@ -34,9 +34,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByPhoneNumberSha(sha).orElseGet(User::new);
         user.setPhoneNumberSha(sha);
         userRepository.save(SmsSendRequest.toEntity(user, smsSendRequest));
-        String refreshJwt = jwtService.createRefreshJwt(user.getPhoneNumber());
+        String refreshJwt = jwtService.createRefreshJwt(user.getPhoneNumberSha());
         userRefreshTokenService.insertRefreshToken(refreshJwt, user);
-        response.setHeader("access_token", jwtService.createAccessJwt(user.getPhoneNumber()));
+        response.setHeader("access_token", jwtService.createAccessJwt(user.getPhoneNumberSha()));
         response.setHeader("refresh_token", refreshJwt);
         return UserIdRes.from(user);
     }

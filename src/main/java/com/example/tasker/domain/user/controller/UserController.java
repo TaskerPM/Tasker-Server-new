@@ -32,6 +32,7 @@ public class UserController {
     /**
      * author 혜도
      * 로그인 회원가입 API - 호출 마다 jasypt 암호화, 이를 이용하여 해싱함수 처리 후 jwt 발급, sha256 jasypt 암호화 후 저장
+     * jwt 갱신 문제 - 기존 리프레쉬 수정, redis 삭제
      */
     @Operation(summary = "사용자 회원가입 로그인", description = "jwt 새로 발급, Header input & output : 없음")
     @PostMapping("/login-signup")
@@ -66,6 +67,7 @@ public class UserController {
         return ApplicationResponse.ok(SmsSendRequest.from(userService.getUserByUserId(userId)));
 
     }
+
 
 //        @PostMapping("/login")
 
