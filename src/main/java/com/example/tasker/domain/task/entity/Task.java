@@ -41,4 +41,9 @@ public class Task extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+
+    @OneToMany(mappedBy = "task")
+    private List<TaskCategory> taskCategories = new ArrayList<>();
+
+
 }
