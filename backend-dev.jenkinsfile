@@ -42,7 +42,7 @@ pipeline {
                 script {
                     try {
                         docker.withRegistry("https://${REGISTRY_URL}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
-                            def image = dockerImage.push("${ECR_REPO}:${BUILD_NUMBER}")
+                            def dockerImage = dockerImage.push("${ECR_REPO}:${BUILD_NUMBER}")
                         }
                     } catch (err) {
                         currentBuild.result = 'FAILURE'
