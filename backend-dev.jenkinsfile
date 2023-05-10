@@ -7,7 +7,7 @@ pipeline {
         TIME_ZONE = 'Asia/Seoul'
         PROFILE = 'local'
         AWS_CREDENTIAL_ID = "ccb582b8-415d-45b1-b076-65bc52f1d839"
-        REGION = 'ap-northeast'
+        REGION = 'ap-northeast-2'
         JAR_FILE = "build/libs/*.jar"
         IMAGE_NAME = "tasker-image"
         REGISTRY_URL = "415154241470.dkr.ecr.ap-northeast-2.amazonaws.com"
