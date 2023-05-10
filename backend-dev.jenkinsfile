@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+    options {
+        timeout(time: 1, unit: 'HOURS') // set timeout 1 hour
+    }
+    environment {
+        TIME_ZONE = 'Asia/Seoul'
+        PROFILE = 'local'
+        AWS_CREDENTIAL_ID = "ccb582b8-415d-45b1-b076-65bc52f1d839"
+        REGION = 'ap-northeast'
+        JAR_FILE = "build/libs/*.jar"
+        IMAGE_NAME = "tasker-image"
+        REGISTRY_URL = "415154241470.dkr.ecr.ap-northeast-2.amazonaws.com"
+        ECR_REPO = "tasker-ecr-repo"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'chmod +x ./gradlew'
+                sh './gradlew build'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    try {
+                        withEnv(['JASYPT_PASSWORD=${env.JASYPT_PASSWORD}']) {
+                            docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                        }
+                    } catch (err) {
+                        currentBuild.result = 'FAILURE'
+                        error "Error occurred while building docker image: ${err}"
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    try {
+                        docker.withRegistry("https://${REGISTRY_URL}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
+                            def image = dockerImage.push("${ECR_REPO}:${BUILD_NUMBER}")
+                        }
+                    } catch (err) {
+                        currentBuild.result = 'FAILURE'
+                        error "Error occurred while pushing docker image: ${err}"
+                    }
+                }
+            }
+        }
+    }
+}

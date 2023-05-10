@@ -10,4 +10,5 @@ ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
 # 빌드된 이미지가 run될 때 실행할 명령어
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar /app.jar"]
+ENTRYPOINT ["sh", "-c"]
+CMD ["java $JASYPT_PASSWORD -jar /app.jar"]
