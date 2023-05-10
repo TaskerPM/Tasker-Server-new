@@ -27,7 +27,7 @@ pipeline {
                 script {
                     try {
                         withEnv(['JASYPT_PASSWORD=${env.JASYPT_PASSWORD}']) {
-                            docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                            docker.build("${ECR_REPO}:${BUILD_NUMBER}")
                         }
                     } catch (err) {
                         currentBuild.result = 'FAILURE'
