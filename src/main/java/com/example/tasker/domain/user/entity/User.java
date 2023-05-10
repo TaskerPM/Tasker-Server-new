@@ -1,9 +1,12 @@
 package com.example.tasker.domain.user.entity;
 
+import com.example.tasker.domain.task.entity.Task;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -34,5 +37,12 @@ public class User extends BaseTimeEntity {
     @OneToOne(mappedBy = "user")
     private UserRefreshToken userRefreshToken;
 
+    @OneToMany(mappedBy = "user")
+    private List<Task> tasks = new ArrayList<>();
+
+    public void addTask(Task task) {
+        this.tasks.add(task);
+        task.setUser(this);
+    }
 
 }

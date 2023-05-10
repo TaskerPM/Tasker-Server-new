@@ -11,27 +11,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
 import springfox.documentation.builders.*;
+import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ParameterType;
+import springfox.documentation.service.Server;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableSwagger2
+@EnableOpenApi
 public class SwaggerConfig {
 
     private final TypeResolver typeResolver;
 
     @Bean
     public Docket api() {
+        Server serverLocal = new Server("local", "http://localhost:8080", "개발자용", Collections.emptyList(), Collections.emptyList());
+        Server testServer = new Server("test", "https://dev.taskerpm.shop", "", Collections.emptyList(), Collections.emptyList());
         return new Docket(DocumentationType.OAS_30)
-                .host("dev.taskerpm.shop")
+                .servers(testServer, serverLocal)
                 .alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
                 .globalRequestParameters(Arrays.asList(
                                 new RequestParameterBuilder()
