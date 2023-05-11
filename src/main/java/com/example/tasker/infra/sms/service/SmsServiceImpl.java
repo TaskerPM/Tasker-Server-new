@@ -1,9 +1,6 @@
 package com.example.tasker.infra.sms.service;
 
-import com.example.tasker.infra.sms.dto.MessageModel;
-import com.example.tasker.infra.sms.dto.SmsNaverRequest;
-import com.example.tasker.infra.sms.dto.SmsSendRequest;
-import com.example.tasker.infra.sms.dto.SmsSendResponse;
+import com.example.tasker.infra.sms.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +64,7 @@ public class SmsServiceImpl implements SmsService{
         SmsSendResponse smsSendResponse = restTemplate.postForObject(
                 new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+this.serviceId+"/messages"), body, SmsSendResponse.class);
 
+        SmsSendResponseCustom smsSendResponseCustom = new SmsSendResponseCustom(smsSendResponse.getValue(), 0);
         return certification;
     }
 

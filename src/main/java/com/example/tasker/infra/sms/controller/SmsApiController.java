@@ -32,6 +32,7 @@ public class SmsApiController {
 
     private final SmsService smsService;
 
+    // 문자발송(번호 엔티티에 번호랑, 인증횟수(0)) 저장
     @Operation(summary = "문자발송", description = "문자를 발송합니다.")
     @ApiResponse(responseCode = "400", description = "전화번호를 확인하여 주세요.(Size, Digits)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping("/send")
