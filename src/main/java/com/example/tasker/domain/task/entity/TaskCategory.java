@@ -18,9 +18,11 @@ public class TaskCategory extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long TaskCategoryId;
 
+    @JoinColumn(name = "task_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Task task;
 
+    @JoinColumn(name = "category_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
