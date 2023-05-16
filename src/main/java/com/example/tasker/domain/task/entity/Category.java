@@ -23,6 +23,7 @@ public class Category  extends BaseTimeEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id")
     private Color color;
 
     @OneToMany(mappedBy = "category")

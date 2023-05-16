@@ -38,6 +38,7 @@ public class Task extends BaseTimeEntity {
         note.setTask(this);
     }
 
+    @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
