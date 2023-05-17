@@ -11,19 +11,19 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Note  extends BaseTimeEntity {
+public class TaskCategory extends BaseTimeEntity {
 
     @Id
-    @Column(name = "note_id")
+    @Column(name = "task_category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long noteId;
-
-    private String content;
-
+    private Long TaskCategoryId;
 
     @JoinColumn(name = "task_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Task task;
 
+    @JoinColumn(name = "category_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Category category;
 
 }

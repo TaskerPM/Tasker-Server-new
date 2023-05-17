@@ -4,6 +4,8 @@ import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,6 +23,10 @@ public class Category  extends BaseTimeEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id")
     private Color color;
+
+    @OneToMany(mappedBy = "category")
+    private List<TaskCategory> taskCategories = new ArrayList<>();
 
 }
