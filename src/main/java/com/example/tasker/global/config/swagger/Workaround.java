@@ -32,6 +32,4 @@ public class Workaround implements WebMvcOpenApiTransformationFilter {
         return documentationType.equals(DocumentationType.OAS_30);
     }
 
-
 }
-
