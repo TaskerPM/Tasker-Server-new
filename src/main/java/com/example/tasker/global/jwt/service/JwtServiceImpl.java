@@ -3,9 +3,12 @@ package com.example.tasker.global.jwt.service;
 import com.example.tasker.domain.user.exception.NotFoundUserException;
 import com.example.tasker.domain.user.repository.UserRefreshTokenRepository;
 import com.example.tasker.domain.user.repository.UserRepository;
+import com.example.tasker.global.jwt.exception.ExpireAccessException;
 import com.example.tasker.global.jwt.exception.ExpireRefreshException;
 import com.example.tasker.global.jwt.exception.NotFoundJwtException;
 import com.example.tasker.global.jwt.secret.SecretKey;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
@@ -138,6 +141,41 @@ public class JwtServiceImpl implements JwtService {
                 .parseClaimsJws(accessToken).getBody().get("numId",String.class);
     }
 
+
+    /**
+     Header에서 X-ACCESS-TOKEN 으로 JWT 추출
+     @return String
+     */
+    @Override
+    public String getJwt(){
+        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+        return request.getHeader("X-ACCESS-TOKEN");
+    }
+
+    /**
+     JWT에서 userId 추출
+     @return Long
+     */
+    @Override
+    public Long getUserId() {
+        //1. JWT 추출
+        String accessToken = getJwt();
+        if (accessToken == null || accessToken.length() == 0)
+            throw new NotFoundJwtException();
+
+        // 2. JWT parsing
+        Jws<Claims> claims;
+        try{
+            claims = Jwts.parser()
+                    .setSigningKey(SecretKey.JWT_ACCESS_SECRET_KEY)
+                    .parseClaimsJws(accessToken);
+        } catch (Exception ignored) {
+            throw new ExpireAccessException();
+        }
+
+        // 3. userIdx 추출
+        return claims.getBody().get("userIdx", Long.class);
+    }
 
 
 }

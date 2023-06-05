@@ -11,5 +11,8 @@ public interface JwtService {
 
     String callApi();
 
+    String getJwt();
+    Long getUserId();
+
 
 }
