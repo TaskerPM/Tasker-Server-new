@@ -32,6 +32,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     compileOnly 'org.projectlombok:lombok:1.18.20'
 
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12' // 테스트 의존성 추가
+    testCompileOnly 'org.projectlombok:lombok:1.18.12' // 테스트 의존성 추가
+
     // DB
     runtimeOnly ('mysql:mysql-connector-java') //mysql8
     implementation ('org.springframework.boot:spring-boot-starter-jdbc')

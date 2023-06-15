@@ -3,6 +3,7 @@ package com.example.tasker.domain.task.entity;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Task extends BaseTimeEntity {
     private String time_start;
     private String time_end;
 
+    @ColumnDefault("0")
     private Integer status;
 
 
