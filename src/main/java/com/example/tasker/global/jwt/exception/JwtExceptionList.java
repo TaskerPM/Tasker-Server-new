@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum JwtExceptionList {
     NOT_FOUND_JWT("J0001", HttpStatus.NOT_FOUND, "JWT 토큰이 비어있습니다."),
-    EXPIRE_REFRESH_TOKEN("J0002", HttpStatus.FORBIDDEN, "REFRESH-TOKEN이 만료되었습니다.");
+    EXPIRE_REFRESH_TOKEN("J0002", HttpStatus.FORBIDDEN, "REFRESH-TOKEN이 만료되었습니다."),
+    EXPIRE_ACCESS_TOKEN("J2003", HttpStatus.FORBIDDEN, "ACCESS-TOKEN이 맞지 않습니다.");
 
     private final String CODE;
     private final HttpStatus httpStatus;

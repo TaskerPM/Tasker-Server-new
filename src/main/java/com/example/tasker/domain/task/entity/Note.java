@@ -20,10 +20,8 @@ public class Note  extends BaseTimeEntity {
 
     private String content;
 
-
     @JoinColumn(name = "task_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Task task;
-
 
 }
