@@ -2,7 +2,9 @@ package com.example.tasker.domain.task.service;
 
 import com.example.tasker.domain.task.dto.GetTasksRes;
 
+import java.util.List;
+
 public interface TaskProvider {
-    GetTasksRes getTasksByDate(Long userId, String date);
+    List<GetTasksRes> getTasksByDate(Long userId, String date);
 
 }

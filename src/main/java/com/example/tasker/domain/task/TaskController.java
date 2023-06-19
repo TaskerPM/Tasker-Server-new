@@ -1,6 +1,7 @@
 package com.example.tasker.domain.task;
 
 import com.example.tasker.domain.task.dto.GetTasksRes;
+import com.example.tasker.domain.task.dto.PatchTaskDetailReq;
 import com.example.tasker.domain.task.dto.PostTaskReq;
 import com.example.tasker.domain.task.dto.PostTaskRes;
 import com.example.tasker.domain.task.service.TaskProvider;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("v1/task")
@@ -31,8 +33,9 @@ public class TaskController {
         return ApplicationResponse.create(taskService.createTask(userId, postTaskReq, date));
     }
 
+
     @GetMapping("/home/list/{date}")
-    public ApplicationResponse<GetTasksRes> getTasksByDate(@PathVariable("date") String date) {
+    public ApplicationResponse<List<GetTasksRes>> getTasksByDate(@PathVariable("date") String date) {
         Long userId = jwtService.getUserId();
 
         taskProvider.getTasksByDate(userId, date);
@@ -49,10 +52,13 @@ public class TaskController {
         return ApplicationResponse.ok(taskId);
     }
 
+    @PatchMapping("/home/list/{date}/{task_id}")
+    public ApplicationResponse<> createTaskDetail(@RequestBody @Valid PatchTaskDetailReq patchTaskDetailReq, @PathVariable("date") String date, @PathVariable("task_id") Long taskId) {
 
+        Long userId = jwtService.getUserId();
 
-
-
+        return ApplicationResponse.create(taskService.);
+    }
 
 
 }
