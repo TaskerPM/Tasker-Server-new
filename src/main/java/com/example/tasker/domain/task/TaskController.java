@@ -34,6 +34,8 @@ public class TaskController {
     }
 
 
+    //TODO
+    // CategoryRepository
     @GetMapping("/home/list/{date}")
     public ApplicationResponse<List<GetTasksRes>> getTasksByDate(@PathVariable("date") String date) {
         Long userId = jwtService.getUserId();
@@ -52,13 +54,13 @@ public class TaskController {
         return ApplicationResponse.ok(taskId);
     }
 
-    @PatchMapping("/home/list/{date}/{task_id}")
-    public ApplicationResponse<> createTaskDetail(@RequestBody @Valid PatchTaskDetailReq patchTaskDetailReq, @PathVariable("date") String date, @PathVariable("task_id") Long taskId) {
-
-        Long userId = jwtService.getUserId();
-
-        return ApplicationResponse.create(taskService.);
-    }
+//    @PatchMapping("/home/list/{date}/{task_id}")
+//    public ApplicationResponse<> createTaskDetail(@RequestBody @Valid PatchTaskDetailReq patchTaskDetailReq, @PathVariable("date") String date, @PathVariable("task_id") Long taskId) {
+//
+//        Long userId = jwtService.getUserId();
+//
+//        return ApplicationResponse.create(taskService.);
+//    }
 
 
 }
