@@ -26,14 +26,15 @@ public class TaskProviderImpl implements TaskProvider{
 
         for (Task t : tasks) {
 
+
+
             GetTasksRes getTasksRes = GetTasksRes.builder()
                     .taskId(t.getTaskId())
                     .title(t.getTitle())
-                    .date(t.getDate())
                     .time_start(t.getTime_start())
                     .time_end(t.getTime_end())
-                    .taskCategories(t.getTaskCategories())
-                    .status(t.getStatus())
+//                    .category(t.getTaskCategories().get())
+                    .isCompeleted(t.getStatus())
                     .build();
 
             getTasksResList.add(getTasksRes);

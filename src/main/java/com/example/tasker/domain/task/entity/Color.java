@@ -20,7 +20,8 @@ public class Color extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long colorId;
 
-    private String color;
+    private String colorBack;
+    private String colorText;
 
     @OneToMany(mappedBy = "color")
     private List<Category> categories = new ArrayList<>();
