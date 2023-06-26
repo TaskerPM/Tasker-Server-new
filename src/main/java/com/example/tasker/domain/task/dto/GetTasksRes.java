@@ -1,13 +1,9 @@
 package com.example.tasker.domain.task.dto;
 
-import com.example.tasker.domain.task.entity.Category;
-import com.example.tasker.domain.task.entity.Task;
-import com.example.tasker.domain.task.entity.TaskCategory;
+import com.example.tasker.domain.category.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 @AllArgsConstructor

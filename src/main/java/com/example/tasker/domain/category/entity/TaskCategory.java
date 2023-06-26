@@ -1,5 +1,7 @@
-package com.example.tasker.domain.task.entity;
+package com.example.tasker.domain.category.entity;
 
+import com.example.tasker.domain.category.entity.Category;
+import com.example.tasker.domain.task.entity.Task;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
 

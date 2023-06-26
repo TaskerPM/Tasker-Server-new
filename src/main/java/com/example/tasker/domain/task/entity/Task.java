@@ -1,5 +1,6 @@
 package com.example.tasker.domain.task.entity;
 
+import com.example.tasker.domain.category.entity.TaskCategory;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
@@ -31,7 +32,6 @@ public class Task extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer status;
 
-
     @OneToMany(mappedBy = "task")
     private List<Note> notes = new ArrayList<>();
 
@@ -44,9 +44,7 @@ public class Task extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-
     @OneToMany(mappedBy = "task")
     private List<TaskCategory> taskCategories = new ArrayList<>();
-
 
 }

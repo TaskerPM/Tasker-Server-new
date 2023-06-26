@@ -1,5 +1,6 @@
-package com.example.tasker.domain.task.entity;
+package com.example.tasker.domain.category.entity;
 
+import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
 
@@ -23,12 +24,7 @@ public class Color extends BaseTimeEntity {
     private String colorBack;
     private String colorText;
 
-    @OneToMany(mappedBy = "color")
-    private List<Category> categories = new ArrayList<>();
-
-    public void addCategory(Category category) {
-        this.categories.add(category);
-        category.setColor(this);
-    }
+//    @OneToMany(mappedBy = "color")
+//    private List<Category> categories = new ArrayList<>();
 
 }

@@ -1,6 +1,6 @@
 package com.example.tasker.domain.task.dto;
 
-import com.example.tasker.domain.task.entity.TaskCategory;
+import com.example.tasker.domain.category.entity.TaskCategory;
 
 import java.util.List;
 

@@ -2,7 +2,6 @@ package com.example.tasker.domain.task.service;
 
 import com.example.tasker.domain.task.dto.GetTasksRes;
 import com.example.tasker.domain.task.entity.Task;
-import com.example.tasker.domain.task.entity.TaskCategory;
 import com.example.tasker.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
