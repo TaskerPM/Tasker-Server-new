@@ -9,7 +9,7 @@ import com.example.tasker.global.dto.BaseException;
 public interface TaskService {
     PostTaskRes createTask(Long userId, PostTaskReq postTaskReq, String date);
 
-    void deleteTask(Long userId, Long taskId);
+    void deleteTask(Long userId, Long taskId) throws BaseException;
 
     PatchTaskDetailRes editTaskDetail(Long userId, PatchTaskDetailReq patchTaskDetailReq, String date, Long taskId) throws BaseException;
 }

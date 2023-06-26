@@ -44,7 +44,16 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     @Transactional
-    public void deleteTask(Long userId, Long taskId) {
+    public void deleteTask(Long userId, Long taskId) throws BaseException {
+
+        Optional<User> user = userRepository.findByUserId(userId);
+        Task taskFindById = taskRepository.findById(taskId).get();
+
+        //유저 일치 확인
+        if (!taskFindById.getUser().equals(user.get())) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+
         taskRepository.deleteByUserUserIdAndTaskId(userId, taskId);
     }
 
