@@ -4,7 +4,6 @@ import com.example.tasker.domain.task.dto.GetTasksRes;
 import com.example.tasker.domain.task.entity.Category;
 import com.example.tasker.domain.task.entity.Color;
 import com.example.tasker.domain.task.entity.Task;
-import com.example.tasker.domain.task.entity.TaskCategory;
 import com.example.tasker.domain.task.repository.CategoryRepository;
 import com.example.tasker.domain.task.repository.TaskCategoryRepository;
 import com.example.tasker.domain.task.repository.TaskRepository;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ public class TaskProviderImpl implements TaskProvider{
     @Override
     @Transactional
     public List<GetTasksRes> getTasksByDate(Long userId, String date) {
+
 
         List<GetTasksRes> getTasksResList = new ArrayList<>();
         List<Task> tasks = taskRepository.findByUserUserIdAndDate(userId, date);
