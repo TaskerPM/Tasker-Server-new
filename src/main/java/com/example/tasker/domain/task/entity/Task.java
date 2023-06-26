@@ -32,11 +32,11 @@ public class Task extends BaseTimeEntity {
     private Integer status;
 
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Note> notes = new ArrayList<>();
 
     public void addNote(Note note) {
-        this.notes.add(note);
+        notes.add(note);
         note.setTask(this);
     }
 
@@ -45,7 +45,7 @@ public class Task extends BaseTimeEntity {
     private User user;
 
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<TaskCategory> taskCategories = new ArrayList<>();
 
 

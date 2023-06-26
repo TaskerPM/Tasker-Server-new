@@ -1,8 +1,5 @@
 package com.example.tasker.domain.task.dto;
 
-import com.example.tasker.domain.task.entity.Category;
-import com.example.tasker.domain.task.entity.Task;
-import com.example.tasker.domain.task.entity.TaskCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +15,9 @@ public class GetTasksRes {
     private String title;
     private String time_start;
     private String time_end;
-    private Category category;
-    //0 미완료 1 완료
-    private Integer isCompeleted;
+    private String categoryName;
+    private String categoryColorBack;
+    private String categoryColorText;
+    private Integer isCompeleted; //0 미완료 1 완료
 
 }

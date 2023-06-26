@@ -23,7 +23,7 @@ public class Color extends BaseTimeEntity {
     private String colorBack;
     private String colorText;
 
-    @OneToMany(mappedBy = "color")
+    @OneToMany(mappedBy = "color", cascade = CascadeType.ALL)
     private List<Category> categories = new ArrayList<>();
 
     public void addCategory(Category category) {

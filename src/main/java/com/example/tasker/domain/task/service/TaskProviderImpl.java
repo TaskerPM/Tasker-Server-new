@@ -1,8 +1,12 @@
 package com.example.tasker.domain.task.service;
 
 import com.example.tasker.domain.task.dto.GetTasksRes;
+import com.example.tasker.domain.task.entity.Category;
+import com.example.tasker.domain.task.entity.Color;
 import com.example.tasker.domain.task.entity.Task;
 import com.example.tasker.domain.task.entity.TaskCategory;
+import com.example.tasker.domain.task.repository.CategoryRepository;
+import com.example.tasker.domain.task.repository.TaskCategoryRepository;
 import com.example.tasker.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,9 @@ import java.util.List;
 public class TaskProviderImpl implements TaskProvider{
 
     private final TaskRepository taskRepository;
+    private final TaskCategoryRepository taskCategoryRepository;
+    private final CategoryRepository categoryRepository;
+
 
     @Override
     @Transactional
@@ -26,6 +33,8 @@ public class TaskProviderImpl implements TaskProvider{
 
         for (Task t : tasks) {
 
+            Category category = getCategoryByTaskId(t.getTaskId());
+            Color color = getColorByCategoryId(category.getCategoryId());
 
 
             GetTasksRes getTasksRes = GetTasksRes.builder()
@@ -33,7 +42,9 @@ public class TaskProviderImpl implements TaskProvider{
                     .title(t.getTitle())
                     .time_start(t.getTime_start())
                     .time_end(t.getTime_end())
-//                    .category(t.getTaskCategories().get())
+                    .categoryName(category.getName())
+                    .categoryColorBack(color.getColorBack())
+                    .categoryColorText(color.getColorText())
                     .isCompeleted(t.getStatus())
                     .build();
 
@@ -42,4 +53,18 @@ public class TaskProviderImpl implements TaskProvider{
 
         return getTasksResList;
     }
+
+    @Override
+    @Transactional
+    public Category getCategoryByTaskId(Long taskId) {
+        return taskCategoryRepository.findByTaskTaskId(taskId).getCategory();
+    }
+
+    @Override
+    @Transactional
+    public Color getColorByCategoryId(Long categoryId) {
+        return categoryRepository.findByCategoryId(categoryId).getColor();
+    }
+
+
 }
