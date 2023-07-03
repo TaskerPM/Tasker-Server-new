@@ -7,11 +7,10 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Note  extends BaseTimeEntity {
+public class Note extends BaseTimeEntity {
 
     @Id
     @Column(name = "note_id")
