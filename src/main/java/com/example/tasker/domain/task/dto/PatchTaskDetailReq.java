@@ -22,14 +22,4 @@ public class PatchTaskDetailReq {
     private String timeEnd;
     private List<String> notesContent;
 
-    public Task toEntityTask(User user, String date) {
-        return Task.builder()
-                .user(user)
-                .title(title)
-                .date(date)
-                .timeStart(timeStart)
-                .timeEnd(timeEnd)
-                .build();
-    }
-
 }

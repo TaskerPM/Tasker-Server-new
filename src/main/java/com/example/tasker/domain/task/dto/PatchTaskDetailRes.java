@@ -4,6 +4,7 @@ import com.example.tasker.domain.task.entity.Note;
 import com.example.tasker.domain.task.entity.Task;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +22,16 @@ public class PatchTaskDetailRes {
     private String categoryColorText;
     private String time_start;
     private String time_end;
-    private List<String> notesContent;
+    private List<GetNoteRes> notesContent;
 
     public static PatchTaskDetailRes of(Task task){
+        List<GetNoteRes> getNoteRes = new ArrayList<>();
+        task.getNotes().forEach(note -> {
+            getNoteRes.add(GetNoteRes.builder()
+                    .noteId(note.getNoteId())
+                    .notesContent(note.getContent())
+                    .build());
+        });
         return PatchTaskDetailRes.builder()
                 .taskId(task.getTaskId())
                 .title(task.getTitle())
@@ -32,7 +40,7 @@ public class PatchTaskDetailRes {
                 .categoryColorText(task.getCategory().getColor().getColorText())
                 .time_start(task.getTimeStart())
                 .time_end(task.getTimeEnd())
-                .notesContent(task.getNotes().stream().map(Note::getContent).collect(Collectors.toList()))
+                .notesContent(getNoteRes)
                 .build();
     }
 }

@@ -149,4 +149,13 @@ public class TaskServiceImpl implements TaskService {
         return "상태가 변경되었습니다.";
     }
 
+    @Override
+    @Transactional
+    public String deleteNote(Long userId, Long noteId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
+        Note note = noteRepository.findById(noteId).orElseThrow(NotFoundNoteException::new);
+        noteRepository.delete(note);
+        return "노트가 삭제되었습니다.";
+    }
+
 }
