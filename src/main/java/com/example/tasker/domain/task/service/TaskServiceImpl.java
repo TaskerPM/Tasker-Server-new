@@ -3,28 +3,35 @@ package com.example.tasker.domain.task.service;
 import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.domain.category.exception.NotFoundCategoryException;
 import com.example.tasker.domain.category.repository.CategoryRepository;
-import com.example.tasker.domain.task.dto.GetTasksRes;
-import com.example.tasker.domain.task.dto.PostTaskReq;
-import com.example.tasker.domain.task.dto.PostTaskRes;
+import com.example.tasker.domain.task.dto.*;
+import com.example.tasker.domain.task.entity.Note;
 import com.example.tasker.domain.task.entity.Task;
-import com.example.tasker.domain.task.exception.NotFoundTaskException;
+import com.example.tasker.domain.task.exception.*;
+import com.example.tasker.domain.task.repository.NoteRepository;
 import com.example.tasker.domain.task.repository.TaskRepository;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.domain.user.exception.NotFoundUserException;
 import com.example.tasker.domain.user.repository.UserRepository;
+import com.example.tasker.global.dto.BaseException;
+import com.example.tasker.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.example.tasker.global.dto.BaseResponseStatus.INVALID_USER_JWT;
 
 @Service
 @RequiredArgsConstructor
-public class TaskServiceImpl implements TaskService{
+public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final NoteRepository noteRepository;
 
     private final CategoryRepository categoryRepository;
 
@@ -36,40 +43,90 @@ public class TaskServiceImpl implements TaskService{
         return PostTaskRes.of(save);
     }
 
-    /**
-     * 카테고리 추가
-     * */
     @Override
     @Transactional
-    public String addCategory(Long userId, Long taskId, Long categoryId) {
-        // 유저 확인
-        userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
-        // task 찾기
-        Task task = taskRepository.findById(taskId).orElseThrow(NotFoundTaskException::new);
-        Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundCategoryException::new);
+    public void deleteTask(Long userId, Long taskId) throws BaseException {
 
-        task.updateCategory(category);
-        taskRepository.save(task);
-        return "카테고리가 추가되었습니다.";
+        Optional<User> user = userRepository.findByUserId(userId);
+        Task taskFindById = taskRepository.findById(taskId).get();
+
+        //유저 일치 확인
+        if (!taskFindById.getUser().equals(user.get())) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+
+        taskRepository.deleteByUserUserIdAndTaskId(userId, taskId);
     }
 
     @Override
     @Transactional
-    public String deleteTask(Long userId, Long taskId) {
-        // 유저 확인
-        userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
-        // task 찾기
-        Task task = taskRepository.findById(taskId).orElseThrow(NotFoundTaskException::new);
-        // task 삭제
-        taskRepository.deleteByUserUserIdAndTaskId(userId, taskId);
-        return "테스크가 삭제되었습니다.";
+    public PatchTaskDetailRes editTaskDetail(Long userId, PatchTaskDetailReq patchTaskDetailReq, Long taskId) throws BaseException {
+        Optional<User> user = userRepository.findByUserId(userId);
+        Task task = taskRepository.findById(taskId).get();
+
+        //유저 일치 확인
+        if (!task.getUser().equals(user.get())) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+
+        if(patchTaskDetailReq.getCategoryId() != null && patchTaskDetailReq.getCategoryId() != 0){
+            Category category = categoryRepository.findById(patchTaskDetailReq.getCategoryId())
+                    .orElseThrow(NotFoundCategoryException::new);
+            task.updateCategory(category);
+        }
+
+        if(patchTaskDetailReq.getTitle() != null && !patchTaskDetailReq.getTitle().equals(task.getTitle())){
+            task.updateTitle(patchTaskDetailReq.getTitle());
+        }
+
+        if(patchTaskDetailReq.getTimeStart() != null && !patchTaskDetailReq.getTimeStart().equals(task.getTimeStart())){
+            // case0. 종료 시간이 없을 때
+            if(patchTaskDetailReq.getTimeEnd() == null && patchTaskDetailReq.getTimeEnd().equals(task.getTimeEnd())){
+                throw new TimeError4Exception();
+            }
+
+            int startTime = Integer.parseInt(patchTaskDetailReq.getTimeStart());
+            int endTime = Integer.parseInt(patchTaskDetailReq.getTimeEnd());
+
+            // case1. 시작 시간과 종료시간이 같음
+            if(startTime == endTime){
+                throw new TimeError2Exception();
+            }
+            // case2. 시작 시간이 종료 시간보다 이를 때
+            if(startTime > endTime){
+                throw new TimeError3Exception();
+            }
+
+            // case3. 다른 task와 시간이 겹침
+            Task findStartTime = taskRepository.findByDateAndTimeStart(task.getDate(), patchTaskDetailReq.getTimeStart());
+            Task findEndTime = taskRepository.findByDateAndTimeEnd(task.getDate(),patchTaskDetailReq.getTimeStart());
+            if(findStartTime != null){
+                throw new TimeError1Exception();
+            }
+            if(findEndTime != null){
+                throw new TimeError1Exception();
+            }
+
+            task.updateTime(patchTaskDetailReq.getTimeStart(), patchTaskDetailReq.getTimeEnd());
+        }
+
+        if (!patchTaskDetailReq.getNotesContent().isEmpty()) {
+            patchTaskDetailReq.getNotesContent().forEach(note->{
+                noteRepository.save(Note.builder()
+                        .content(note)
+                        .task(task)
+                        .build());
+            });
+        }
+
+        Task save = taskRepository.save(task);
+        return PatchTaskDetailRes.of(save);
     }
 
     @Override
     public List<GetTasksRes> getTasksByDate(Long userId, String date) {
         // 유저 확인
         userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
-
         List<Task> tasks = taskRepository.findByUserUserIdAndDate(userId, date);
         List<GetTasksRes> getTasksResList = new ArrayList<>();
         tasks.forEach(task -> {

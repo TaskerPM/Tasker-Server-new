@@ -1,7 +1,6 @@
 package com.example.tasker.domain.task.entity;
 
 import com.example.tasker.domain.category.entity.Category;
-import com.example.tasker.domain.category.entity.TaskCategory;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
@@ -13,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -47,10 +47,17 @@ public class Task extends BaseTimeEntity {
     @OneToMany(mappedBy = "task")
     private List<Note> notes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "task")
-    private List<TaskCategory> taskCategories = new ArrayList<>();
-
     public void updateCategory(Category category){
         this.category = category;
     }
+
+    public void updateTitle(String title){
+        this.title = title;
+    }
+
+    public void updateTime(String timeStart, String timeEnd){
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+    }
+
 }

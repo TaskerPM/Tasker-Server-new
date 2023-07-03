@@ -16,4 +16,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     void deleteByUserUserIdAndTaskId(long userId, long taskId);
 
     List<Task> findByCategory(Category category);
+
+    Task findByDateAndTimeStart(String date, String timeStart);
+
+    Task findByDateAndTimeEnd(String date, String timeStart);
 }

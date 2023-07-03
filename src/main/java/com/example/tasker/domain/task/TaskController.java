@@ -3,11 +3,16 @@ package com.example.tasker.domain.task;
 import com.example.tasker.domain.task.dto.GetTasksRes;
 import com.example.tasker.domain.task.dto.PostTaskReq;
 import com.example.tasker.domain.task.dto.PostTaskRes;
+import com.example.tasker.domain.task.dto.*;
 import com.example.tasker.domain.task.service.TaskService;
 import com.example.tasker.global.dto.ApplicationResponse;
+import com.example.tasker.global.dto.BaseException;
 import com.example.tasker.global.jwt.service.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,34 +28,53 @@ public class TaskController {
     private final TaskService taskService;
     private final JwtService jwtService;
 
-    @PostMapping("/list/{date}")
-    @Operation(summary = "(Post) 테스크 생성", description = "테스크 생성 API 입니다.")
-    public ApplicationResponse<PostTaskRes> createTask(@RequestBody @Valid PostTaskReq postTaskReq,
-                                                       @PathVariable("date") String date) {
+    @Operation(summary = "Task 생성", description = "리스트형, 카테고리형 Task 생성, Header input : 엑세스 토큰")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "성공"),
+    })
+    @PostMapping("/home/{date}")
+    public ApplicationResponse<PostTaskRes> createTask(@RequestBody @Valid PostTaskReq postTaskReq, @PathVariable("date") String date) {
+
         Long userId = jwtService.getUserId();
+
         return ApplicationResponse.create(taskService.createTask(userId, postTaskReq, date));
     }
 
-    @PostMapping("/list/{task_id}/category")
-    @Operation(summary = "(Post) 테스크에 카테고리 추가", description = "테스크에 카테고리 추가 API 입니다.")
-    public ApplicationResponse<String> addCategory(@PathVariable Long task_id,
-                                                   @RequestParam("categoryId") Long categoryId) {
-        Long userId = jwtService.getUserId();
-        return ApplicationResponse.ok(taskService.addCategory(userId, task_id, categoryId));
-    }
-
-    @DeleteMapping("/list/{task_id}")
-    @Operation(summary = "(Delete) 테스크 삭제", description = "테스크 삭제 API 입니다.")
-    public ApplicationResponse<String> deleteTask(@PathVariable Long task_id){
-        Long userId = jwtService.getUserId();
-        return ApplicationResponse.ok(taskService.deleteTask(userId, task_id));
-    }
-
-    @GetMapping("/list/{date}")
-    @Operation(summary = "(Get) 테스크 보기", description = "날짜에 해당하는 테스크 보기 API 입니다.")
+    @Operation(summary = "날짜별 Tasks 조회", description = "리스트형, 카테고리형 날짜별 Tasks 조회, Header input : 엑세스 토큰")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다."),
+    })
+    @GetMapping("/home/{date}")
     public ApplicationResponse<List<GetTasksRes>> getTasksByDate(@PathVariable("date") String date) {
         Long userId = jwtService.getUserId();
         return ApplicationResponse.ok(taskService.getTasksByDate(userId, date));
+    }
+
+    @Operation(summary = "Task 삭제", description = "리스트형, 카테고리형 날짜별 Task 삭제, Header input : 엑세스 토큰")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다."),
+    })
+    @PatchMapping("/home/{date}")
+    public ApplicationResponse<Long> deleteTask(@PathVariable("date") String date, @RequestParam Long taskId) throws BaseException {
+
+        Long userId = jwtService.getUserId();
+        taskService.deleteTask(userId, taskId);
+
+        return ApplicationResponse.ok(taskId);
+    }
+
+    @Operation(summary = "Task 상세 수정", description = "테스크 상세보기 수정, Header input : 엑세스 토큰")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "성공"),
+            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다."),
+    })
+    @PatchMapping("/home/{task_id}")
+    public ApplicationResponse<PatchTaskDetailRes> editTaskDetail(@RequestBody @Valid PatchTaskDetailReq patchTaskDetailReq,
+                                                                  @PathVariable("task_id") Long taskId) throws BaseException {
+        Long userId = jwtService.getUserId();
+        return ApplicationResponse.create(taskService.editTaskDetail(userId, patchTaskDetailReq, taskId));
     }
 
 }
