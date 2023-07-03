@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User extends BaseTimeEntity {
 
     @Id
@@ -38,6 +37,6 @@ public class User extends BaseTimeEntity {
     private UserRefreshToken userRefreshToken;
 
     @OneToMany(mappedBy = "user")
-    private List<Task> tasks = new ArrayList<>();
+    private List<Task> taskList = new ArrayList<>();
 
 }

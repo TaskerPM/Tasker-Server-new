@@ -1,12 +1,10 @@
 package com.example.tasker.domain.task.dto;
 
-import com.example.tasker.domain.task.entity.Note;
 import com.example.tasker.domain.task.entity.Task;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -26,7 +24,7 @@ public class PatchTaskDetailRes {
 
     public static PatchTaskDetailRes of(Task task){
         List<GetNoteRes> getNoteRes = new ArrayList<>();
-        task.getNotes().forEach(note -> {
+        task.getNoteList().forEach(note -> {
             getNoteRes.add(GetNoteRes.builder()
                     .noteId(note.getNoteId())
                     .notesContent(note.getContent())
