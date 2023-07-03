@@ -16,4 +16,6 @@ public interface TaskService {
     List<GetTasksRes> getTasksByDate(Long userId, String date);
 
     String checkTask(Long userId, Long taskId);
+
+    String deleteNote(Long userId, Long noteId);
 }
