@@ -4,13 +4,17 @@ import com.example.tasker.domain.task.dto.GetTasksRes;
 import com.example.tasker.domain.task.dto.PostTaskReq;
 import com.example.tasker.domain.task.dto.PostTaskRes;
 import com.example.tasker.domain.task.dto.*;
+import com.example.tasker.domain.task.exception.NotFoundTaskException;
 import com.example.tasker.domain.task.service.TaskService;
 import com.example.tasker.global.dto.ApplicationResponse;
 import com.example.tasker.global.dto.BaseException;
+import com.example.tasker.global.dto.ErrorResponse;
 import com.example.tasker.global.jwt.service.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -28,15 +32,24 @@ public class TaskController {
     private final TaskService taskService;
     private final JwtService jwtService;
 
+    @Operation(summary = "Task 상태 변경", description = " 0 : 미완료, 1 : 완료")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "해당 테스크를 찾을 수 없습니다.(T0001)", content = @Content(schema = @Schema(implementation = NotFoundTaskException.class)))
+    })
+    @GetMapping("/home/{task_id}")
+    public ApplicationResponse<String> checkTask(@PathVariable("task_id") Long taskId) {
+        Long userId = jwtService.getUserId();
+        return ApplicationResponse.create(taskService.checkTask(userId, taskId));
+    }
+
     @Operation(summary = "Task 생성", description = "리스트형, 카테고리형 Task 생성, Header input : 엑세스 토큰")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공"),
     })
     @PostMapping("/home/{date}")
     public ApplicationResponse<PostTaskRes> createTask(@RequestBody @Valid PostTaskReq postTaskReq, @PathVariable("date") String date) {
-
         Long userId = jwtService.getUserId();
-
         return ApplicationResponse.create(taskService.createTask(userId, postTaskReq, date));
     }
 
@@ -58,10 +71,8 @@ public class TaskController {
     })
     @PatchMapping("/home/{date}")
     public ApplicationResponse<Long> deleteTask(@PathVariable("date") String date, @RequestParam Long taskId) throws BaseException {
-
         Long userId = jwtService.getUserId();
         taskService.deleteTask(userId, taskId);
-
         return ApplicationResponse.ok(taskId);
     }
 

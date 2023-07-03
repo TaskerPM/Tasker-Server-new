@@ -135,4 +135,18 @@ public class TaskServiceImpl implements TaskService {
         return getTasksResList;
     }
 
+    @Override
+    @Transactional
+    public String checkTask(Long userId, Long taskId){
+        User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
+        Task task = taskRepository.findByTaskIdAndUser(taskId, user).orElseThrow(NotFoundTaskException::new);
+        Integer status = 0;
+        if(task.getStatus() == 0){
+            status = 1;
+        }
+        task.updateStatus(status);
+        taskRepository.save(task);
+        return "상태가 변경되었습니다.";
+    }
+
 }

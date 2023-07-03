@@ -14,4 +14,6 @@ public interface TaskService {
     PatchTaskDetailRes editTaskDetail(Long userId, PatchTaskDetailReq patchTaskDetailReq, Long taskId) throws BaseException;
 
     List<GetTasksRes> getTasksByDate(Long userId, String date);
+
+    String checkTask(Long userId, Long taskId);
 }
