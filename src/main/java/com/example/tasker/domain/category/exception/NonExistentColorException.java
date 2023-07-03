@@ -4,9 +4,9 @@ import com.example.tasker.domain.report.exception.ReportException;
 
 public class NonExistentColorException extends ReportException {
     public NonExistentColorException() {
-        super(CategoryExceptionList.NO_MODIFIED_CATEGORY.getCODE(),
-                CategoryExceptionList.NO_MODIFIED_CATEGORY.getHttpStatus(),
-                CategoryExceptionList.NO_MODIFIED_CATEGORY.getMESSAGE()
+        super(CategoryExceptionList.NO_EXISTENT_COLOR.getCODE(),
+                CategoryExceptionList.NO_EXISTENT_COLOR.getHttpStatus(),
+                CategoryExceptionList.NO_EXISTENT_COLOR.getMESSAGE()
         );
     }
 }
