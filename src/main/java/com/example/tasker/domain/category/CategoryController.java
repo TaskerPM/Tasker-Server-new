@@ -2,6 +2,7 @@ package com.example.tasker.domain.category;
 
 import com.example.tasker.domain.category.dto.PostCategoryReq;
 import com.example.tasker.domain.category.dto.ReadCategoryRes;
+import com.example.tasker.domain.category.dto.UpdateCategoryReq;
 import com.example.tasker.domain.category.service.CategoryService;
 import com.example.tasker.global.dto.ApplicationResponse;
 import com.example.tasker.global.jwt.service.JwtService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("v1/category")
+@RequestMapping("api/v1/category")
 @RequiredArgsConstructor
 @Api(tags = "Category API", value = "카테고리 관련 API")
 public class CategoryController {
@@ -21,9 +22,9 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final JwtService jwtService;
 
-    @PostMapping
+    @PostMapping("")
     @Operation(summary = "(Post) 카테고리 생성", description = "카테고리 생성 API 입니다.")
-    public ApplicationResponse<?> createCategory(@RequestBody PostCategoryReq postCategoryReq){
+    public ApplicationResponse<String> createCategory(@RequestBody PostCategoryReq postCategoryReq){
         Long userId = jwtService.getUserId();
         return ApplicationResponse.create(categoryService.createCategory(userId, postCategoryReq));
     }
@@ -35,15 +36,27 @@ public class CategoryController {
         return ApplicationResponse.ok(categoryService.readCategory(userId));
     }
 
+    // 수정 필요
     @PutMapping("/{category_id}")
     @Operation(summary = "(Put) 카테고리 수정", description = "카테고리 수정 API 입니다.")
-    public ApplicationResponse<?> updateCategory(@PathVariable Long category_id){
-        return ApplicationResponse.ok(categoryService.updateCategory(category_id));
+    public ApplicationResponse<String> updateCategory(@PathVariable Long category_id,
+                                                      @RequestBody UpdateCategoryReq updateCategoryReq){
+        Long userId = jwtService.getUserId();
+        return ApplicationResponse.ok(categoryService.updateCategory(userId, category_id, updateCategoryReq));
     }
 
     @DeleteMapping("/{category_id}")
     @Operation(summary = "(Delete) 카테고리 삭제", description = "카테고리 삭제 API 입니다.")
-    public ApplicationResponse<?> deleteCategory(@PathVariable Long category_id){
-        return ApplicationResponse.ok(categoryService.deleteCategory(category_id));
+    public ApplicationResponse<String> deleteCategory(@PathVariable Long category_id){
+        Long userId = jwtService.getUserId();
+        return ApplicationResponse.ok(categoryService.deleteCategory(userId, category_id));
     }
+
+    @GetMapping("/gathering")
+    @Operation(summary = "모아보기", description = "모아보기 API 입니다.")
+    public ApplicationResponse<?> gathering(){
+        Long userId = jwtService.getUserId();
+        return ApplicationResponse.ok(categoryService.gathering(userId));
+    }
+
 }

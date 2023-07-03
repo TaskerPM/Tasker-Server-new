@@ -1,13 +1,10 @@
 package com.example.tasker.domain.category.entity;
 
-import com.example.tasker.domain.task.entity.Task;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -22,15 +19,31 @@ public class Category extends BaseTimeEntity {
 
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id")
-    private Task task;
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "color_id")
     private Color color;
 
-//    @OneToMany(mappedBy = "category")
-//    private List<TaskCategory> taskCategories = new ArrayList<>();
+    @Builder
+    public Category(User user, String name, Color color) {
+        this.user = user;
+        this.name = name;
+        this.color = color;
+    }
+
+    public static Category of(User user, String name, Color color){
+        return Category.builder()
+                .user(user)
+                .name(name)
+                .color(color)
+                .build();
+    }
+
+    public void updateName(String name){
+        this.name = name;
+    }
 
 }

@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "카테고리 수정을 위한 객체")
-public class UpdateCategoryReq {
-    private String name;
-    private String colorBack;
-    private String colorText;
+@ApiModel(description = "모아보기")
+public class GatheringRes {
+
+    // 날짜
+    private String date;
+    // task
 }
