@@ -2,6 +2,7 @@ package com.example.tasker.domain.task.repository;
 
 import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.domain.task.entity.Task;
+import com.example.tasker.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Task findByDateAndTimeStart(String date, String timeStart);
 
     Task findByDateAndTimeEnd(String date, String timeStart);
+
+    Optional<Task> findByTaskIdAndUser(Long taskId, User user);
 }

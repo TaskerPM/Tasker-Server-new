@@ -60,4 +60,8 @@ public class Task extends BaseTimeEntity {
         this.timeEnd = timeEnd;
     }
 
+    public void updateStatus(Integer status){
+        this.status = status;
+    }
+
 }
