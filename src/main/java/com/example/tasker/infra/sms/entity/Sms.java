@@ -16,12 +16,12 @@ public class Sms extends BaseTimeEntity {
     @Id
     @Column(name = "sms_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long smsId;
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "cnt", columnDefinition = "3")
+    @Column(name = "cnt", columnDefinition = "INT")
     private Integer cnt;
 
 }

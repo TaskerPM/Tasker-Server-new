@@ -4,7 +4,6 @@ import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Task extends BaseTimeEntity {
 
     @Id
@@ -33,7 +31,7 @@ public class Task extends BaseTimeEntity {
     @Column(name = "time_end")
     private String timeEnd;
 
-    @ColumnDefault("0")
+    @Column(name = "status", columnDefinition = "INT DEFAULT 0")
     private Integer status;
 
     @JoinColumn(name = "user_id")
@@ -45,7 +43,14 @@ public class Task extends BaseTimeEntity {
     private Category category;
 
     @OneToMany(mappedBy = "task")
-    private List<Note> notes = new ArrayList<>();
+    private List<Note> noteList = new ArrayList<>();
+
+    @Builder
+    public Task(String title, String date, User user) {
+        this.title = title;
+        this.date = date;
+        this.user = user;
+    }
 
     public void updateCategory(Category category){
         this.category = category;
