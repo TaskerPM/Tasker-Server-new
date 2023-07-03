@@ -1,5 +1,6 @@
 package com.example.tasker.domain.category;
 
+import com.example.tasker.domain.category.dto.GatheringRes;
 import com.example.tasker.domain.category.dto.PostCategoryReq;
 import com.example.tasker.domain.category.dto.ReadCategoryRes;
 import com.example.tasker.domain.category.dto.UpdateCategoryReq;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -52,11 +54,11 @@ public class CategoryController {
         return ApplicationResponse.ok(categoryService.deleteCategory(userId, category_id));
     }
 
-    @GetMapping("/gathering")
+    @GetMapping("/gathering/{category_id}")
     @Operation(summary = "모아보기", description = "모아보기 API 입니다.")
-    public ApplicationResponse<?> gathering(){
+    public ApplicationResponse<HashMap<String,List<GatheringRes>>> gathering(@PathVariable Long category_id){
         Long userId = jwtService.getUserId();
-        return ApplicationResponse.ok(categoryService.gathering(userId));
+        return ApplicationResponse.ok(categoryService.gathering(userId, category_id));
     }
 
 }

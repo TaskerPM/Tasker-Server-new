@@ -1,16 +1,14 @@
 package com.example.tasker.domain.category.service;
 
-import com.example.tasker.domain.category.dto.PostCategoryReq;
-import com.example.tasker.domain.category.dto.ReadCategoryRes;
-import com.example.tasker.domain.category.dto.UpdateCategoryReq;
+import com.example.tasker.domain.category.dto.*;
 import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.domain.category.entity.Color;
-import com.example.tasker.domain.category.exception.DuplicateCategoryException;
 import com.example.tasker.domain.category.exception.NoModifiedCategoryException;
 import com.example.tasker.domain.category.exception.NonExistentColorException;
 import com.example.tasker.domain.category.exception.NotFoundCategoryException;
 import com.example.tasker.domain.category.repository.CategoryRepository;
 import com.example.tasker.domain.category.repository.ColorRepository;
+import com.example.tasker.domain.task.entity.Task;
 import com.example.tasker.domain.task.repository.TaskRepository;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.domain.user.exception.NotFoundUserException;
@@ -20,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -104,7 +103,21 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public Object gathering(Long userId) {
-        return null;
+    public HashMap<String,List<GatheringRes>> gathering(Long userId, Long categoryId) {
+        // 카테고리 찾기
+        Category category = categoryRepository.findById(categoryId).orElseThrow(NotFoundCategoryException::new);
+        List<Task> tasks = taskRepository.findByCategory(category);
+
+        HashMap<String,List<GatheringRes>> map = new HashMap<>();
+        tasks.forEach(task->{
+            String getDate = task.getDate();
+            String date = getDate.substring(0,6);
+            List<GatheringRes> list;
+            if(map.get(date) == null) list = new ArrayList<>();
+            else list = map.get(date);
+            list.add(GatheringRes.of(task));
+        });
+
+        return map;
     }
 }

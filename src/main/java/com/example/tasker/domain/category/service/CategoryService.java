@@ -1,9 +1,11 @@
 package com.example.tasker.domain.category.service;
 
+import com.example.tasker.domain.category.dto.GatheringRes;
 import com.example.tasker.domain.category.dto.PostCategoryReq;
 import com.example.tasker.domain.category.dto.ReadCategoryRes;
 import com.example.tasker.domain.category.dto.UpdateCategoryReq;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface CategoryService {
@@ -11,9 +13,9 @@ public interface CategoryService {
 
     List<ReadCategoryRes> readCategory(Long userId);
 
-    String updateCategory(Long userId, Long category_id, UpdateCategoryReq updateCategoryReq);
+    String updateCategory(Long userId, Long categoryId, UpdateCategoryReq updateCategoryReq);
 
     String deleteCategory(Long userId, Long categoryId);
 
-    Object gathering(Long userId);
+    HashMap<String,List<GatheringRes>> gathering(Long userId, Long categoryId);
 }
