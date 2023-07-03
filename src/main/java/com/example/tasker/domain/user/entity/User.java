@@ -40,9 +40,4 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     private List<Task> tasks = new ArrayList<>();
 
-    public void addTask(Task task) {
-        this.tasks.add(task);
-        task.setUser(this);
-    }
-
 }

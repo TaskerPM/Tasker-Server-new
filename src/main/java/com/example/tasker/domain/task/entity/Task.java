@@ -1,5 +1,6 @@
 package com.example.tasker.domain.task.entity;
 
+import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
@@ -25,28 +26,38 @@ public class Task extends BaseTimeEntity {
     private String title;
 
     private String date;
-    private String time_start;
-    private String time_end;
+
+    @Column(name = "time_start")
+    private String timeStart;
+
+    @Column(name = "time_end")
+    private String timeEnd;
 
     @ColumnDefault("0")
     private Integer status;
-
-
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
-    private List<Note> notes = new ArrayList<>();
-
-    public void addNote(Note note) {
-        notes.add(note);
-        note.setTask(this);
-    }
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @JoinColumn(name = "category_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    private Category category;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
-    private List<TaskCategory> taskCategories = new ArrayList<>();
+    @OneToMany(mappedBy = "task")
+    private List<Note> notes = new ArrayList<>();
 
+    public void updateCategory(Category category){
+        this.category = category;
+    }
+
+    public void updateTitle(String title){
+        this.title = title;
+    }
+
+    public void updateTime(String timeStart, String timeEnd){
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+    }
 
 }

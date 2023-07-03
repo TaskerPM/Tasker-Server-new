@@ -1,11 +1,10 @@
-package com.example.tasker.domain.task.entity;
+package com.example.tasker.domain.category.entity;
 
+import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.global.entity.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -21,14 +20,7 @@ public class Color extends BaseTimeEntity {
     private Long colorId;
 
     private String colorBack;
+
     private String colorText;
-
-    @OneToMany(mappedBy = "color", cascade = CascadeType.ALL)
-    private List<Category> categories = new ArrayList<>();
-
-    public void addCategory(Category category) {
-        this.categories.add(category);
-        category.setColor(this);
-    }
 
 }
