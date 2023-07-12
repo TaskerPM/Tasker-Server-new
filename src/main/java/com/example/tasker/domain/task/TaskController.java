@@ -45,7 +45,7 @@ public class TaskController {
     @Operation(summary = "날짜별 Tasks 조회", description = "리스트형, 카테고리형 날짜별 Tasks 조회, Header input : 엑세스 토큰")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/home/{date}")
     public ApplicationResponse<List<GetTasksRes>> getTasksByDate(@PathVariable("date") String date) {
@@ -56,30 +56,31 @@ public class TaskController {
     @Operation(summary = "Task 상태 변경", description = " 0 : 미완료, 1 : 완료")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "해당 테스크를 찾을 수 없습니다.(T0001)", content = @Content(schema = @Schema(implementation = NotFoundTaskException.class)))
+            @ApiResponse(responseCode = "400", description = "해당 테스크를 찾을 수 없습니다.(T0001)", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/home/{task_id}/status")
     public ApplicationResponse<String> checkTask(@PathVariable("task_id") Long taskId) {
         Long userId = jwtService.getUserId();
-        return ApplicationResponse.create(taskService.checkTask(userId, taskId));
+        taskService.checkTask(userId, taskId);
+        return ApplicationResponse.ok();
     }
 
     @Operation(summary = "Task 삭제", description = "리스트형, 카테고리형 날짜별 Task 삭제, Header input : 엑세스 토큰")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/{taskId}")
     public ApplicationResponse<Long> deleteTask(@PathVariable Long taskId) throws BaseException {
         Long userId = jwtService.getUserId();
         taskService.deleteTask(userId, taskId);
-        return ApplicationResponse.ok(taskId);
+        return ApplicationResponse.ok();
     }
 
     @Operation(summary = "Task 상세 수정", description = "테스크 상세보기 수정, Header input : 엑세스 토큰")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공"),
-            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PatchMapping("/{task_id}")
     public ApplicationResponse<PatchTaskDetailRes> editTaskDetail(@RequestBody @Valid PatchTaskDetailReq patchTaskDetailReq,
@@ -88,16 +89,20 @@ public class TaskController {
         return ApplicationResponse.create(taskService.editTaskDetail(userId, patchTaskDetailReq, taskId));
     }
 
-    @Operation(summary = "Note 삭제", description = "Note 삭제, Header input : 엑세스 토큰")
+    @Operation(summary = "task 하나 보기", description = "Header input : 엑세스 토큰")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공"),
-            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(responseCode = "2003", description = "권한이 없는 유저의 접근입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @DeleteMapping("/note/{note_id}")
-    public ApplicationResponse<String> deleteNote(@PathVariable("note_id") Long noteId){
+    @GetMapping("/{task_id}")
+    public ApplicationResponse<GetTaskRes> readTask(@PathVariable("task_id") Long taskId) {
         Long userId = jwtService.getUserId();
-        return ApplicationResponse.ok(taskService.deleteNote(userId, noteId));
+        return ApplicationResponse.ok(taskService.readTask(userId, taskId));
     }
 
     // 테스크 북 발행
+//    @PostMapping("/book")
+//    public ApplicationResponse<?> createBook(){
+//
+//    }
 }
