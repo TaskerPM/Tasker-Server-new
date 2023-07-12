@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -111,12 +112,29 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (!patchTaskDetailReq.getNotesContent().isEmpty()) {
-            patchTaskDetailReq.getNotesContent().forEach(note->{
-                noteRepository.save(Note.builder()
-                        .content(note)
-                        .task(task)
-                        .build());
+            HashSet<String> noteContentSet = new HashSet<>();
+            task.getNoteList().forEach(note -> {
+                noteContentSet.add(note.getContent());
             });
+
+            patchTaskDetailReq.getNotesContent().forEach(note->{
+                if(!noteContentSet.contains(note)){
+                    noteRepository.save(Note.builder()
+                            .content(note)
+                            .task(task)
+                            .build());
+                    noteContentSet.remove(note);
+                }
+            });
+
+            // 포함되어 있지 않은 note는 DB에서 삭제
+            if(!noteContentSet.isEmpty()){
+                noteContentSet.forEach(note->{
+                    Note getNote = noteRepository.findByContentAndTask(note, task).orElseThrow(NotFoundNoteException::new);;
+                    noteRepository.delete(getNote);
+                });
+            }
+
         }
 
         Task save = taskRepository.save(task);
@@ -137,7 +155,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public String checkTask(Long userId, Long taskId){
+    public void checkTask(Long userId, Long taskId){
         User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
         Task task = taskRepository.findByTaskIdAndUser(taskId, user).orElseThrow(NotFoundTaskException::new);
         Integer status = 0;
@@ -146,16 +164,13 @@ public class TaskServiceImpl implements TaskService {
         }
         task.updateStatus(status);
         taskRepository.save(task);
-        return "상태가 변경되었습니다.";
     }
 
     @Override
-    @Transactional
-    public String deleteNote(Long userId, Long noteId) {
+    public GetTaskRes readTask(Long userId, Long taskId) {
         User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
-        Note note = noteRepository.findById(noteId).orElseThrow(NotFoundNoteException::new);
-        noteRepository.delete(note);
-        return "노트가 삭제되었습니다.";
+        Task task = taskRepository.findByTaskIdAndUser(taskId, user).orElseThrow(NotFoundTaskException::new);
+        return GetTaskRes.of(task);
     }
 
 }
