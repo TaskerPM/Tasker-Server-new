@@ -12,9 +12,9 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findByUserUserIdAndDate(long userId, String date);
+    List<Task> findByUserAndDate(User user, String date);
 
-    void deleteByUserUserIdAndTaskId(long userId, long taskId);
+    void deleteByUserAndTaskId(User user, long taskId);
 
     List<Task> findByCategory(Category category);
 

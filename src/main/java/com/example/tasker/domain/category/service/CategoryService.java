@@ -2,20 +2,21 @@ package com.example.tasker.domain.category.service;
 
 import com.example.tasker.domain.category.dto.GatheringRes;
 import com.example.tasker.domain.category.dto.PostCategoryReq;
-import com.example.tasker.domain.category.dto.ReadCategoryRes;
+import com.example.tasker.domain.category.dto.GetCategoryRes;
 import com.example.tasker.domain.category.dto.UpdateCategoryReq;
+import com.example.tasker.domain.user.entity.User;
 
 import java.util.HashMap;
 import java.util.List;
 
 public interface CategoryService {
-    String createCategory(Long userId, PostCategoryReq postCategoryReq);
+    GetCategoryRes createCategory(User user, PostCategoryReq postCategoryReq);
 
-    List<ReadCategoryRes> readCategory(Long userId);
+    List<GetCategoryRes> readCategory(User user);
 
-    String updateCategory(Long userId, Long categoryId, UpdateCategoryReq updateCategoryReq);
+    GetCategoryRes updateCategory(User user, Long categoryId, UpdateCategoryReq updateCategoryReq);
 
-    String deleteCategory(Long userId, Long categoryId);
+    void deleteCategory(User user, Long categoryId);
 
-    HashMap<String,List<GatheringRes>> gathering(Long userId, Long categoryId);
+    HashMap<String,List<GatheringRes>> gathering(User user, Long categoryId);
 }

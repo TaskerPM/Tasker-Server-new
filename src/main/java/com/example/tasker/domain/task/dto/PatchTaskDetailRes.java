@@ -1,26 +1,54 @@
 package com.example.tasker.domain.task.dto;
 
+import com.example.tasker.domain.category.entity.Category;
 import com.example.tasker.domain.task.entity.Task;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PatchTaskDetailRes {
 
+    @Schema(description = "테스커 Id", defaultValue = "2")
     private Long taskId;
+    @Schema(description = "테스커 제목", defaultValue = "IA구조도 그리기")
     private String title;
+    @Schema(description = "시작 시간", defaultValue = "1310")
+    private String timeStart;
+    @Schema(description = "끝난 시간", defaultValue = "2000")
+    private String timeEnd;
+
+    @Schema(description = "카테고리 Id", defaultValue = "1")
+    private Long categoryId;
+    @Schema(description = "카테고리 이름", defaultValue = "UX스터디")
     private String categoryName;
+    @Schema(description = "카테고리 배경 색깔", defaultValue = "#FEDFDF")
     private String categoryColorBack;
+    @Schema(description = "카테고리 텍스트 색깔", defaultValue = "#D87A7A")
     private String categoryColorText;
-    private String time_start;
-    private String time_end;
+
+    @Schema(description = "노트 리스트")
     private List<GetNoteRes> notesContent;
+
+    @Builder
+    public PatchTaskDetailRes(Long taskId, String title, String timeStart, String timeEnd, List<GetNoteRes> notesContent) {
+        this.taskId = taskId;
+        this.title = title;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.notesContent = notesContent;
+    }
+
+    public void updateCategory(Category category){
+        this.categoryId = category.getCategoryId();
+        this.categoryName = category.getName();
+        this.categoryColorBack = category.getColor().getColorBack();
+        this.categoryColorText = category.getColor().getColorText();
+    }
 
     public static PatchTaskDetailRes of(Task task){
         List<GetNoteRes> getNoteRes = new ArrayList<>();
@@ -30,15 +58,19 @@ public class PatchTaskDetailRes {
                     .notesContent(note.getContent())
                     .build());
         });
-        return PatchTaskDetailRes.builder()
+
+        PatchTaskDetailRes patchTaskDetailRes = PatchTaskDetailRes.builder()
                 .taskId(task.getTaskId())
                 .title(task.getTitle())
-                .categoryName(task.getCategory().getName())
-                .categoryColorBack(task.getCategory().getColor().getColorBack())
-                .categoryColorText(task.getCategory().getColor().getColorText())
-                .time_start(task.getTimeStart())
-                .time_end(task.getTimeEnd())
+                .timeStart(task.getTimeStart())
+                .timeEnd(task.getTimeEnd())
                 .notesContent(getNoteRes)
                 .build();
+
+        if(task.getCategory() != null){
+            patchTaskDetailRes.updateCategory(task.getCategory());
+        }
+
+        return patchTaskDetailRes;
     }
 }

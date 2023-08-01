@@ -10,10 +10,7 @@ import com.example.tasker.domain.task.exception.*;
 import com.example.tasker.domain.task.repository.NoteRepository;
 import com.example.tasker.domain.task.repository.TaskRepository;
 import com.example.tasker.domain.user.entity.User;
-import com.example.tasker.domain.user.exception.NotFoundUserException;
-import com.example.tasker.domain.user.repository.UserRepository;
 import com.example.tasker.global.dto.BaseException;
-import com.example.tasker.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.tasker.global.dto.BaseResponseStatus.INVALID_USER_JWT;
 
@@ -31,63 +26,60 @@ import static com.example.tasker.global.dto.BaseResponseStatus.INVALID_USER_JWT;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
     private final NoteRepository noteRepository;
-
     private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
-    public PostTaskRes createTask(Long userId, PostTaskReq postTaskReq, String date) {
-        User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new); // 유저 찾기
+    public PostTaskRes createTask(User user, PostTaskReq postTaskReq, String date) {
         Task save = taskRepository.save(postTaskReq.toEntity(user, date));
         return PostTaskRes.of(save);
     }
 
     @Override
     @Transactional
-    public void deleteTask(Long userId, Long taskId) throws BaseException {
+    public void deleteTask(User user, Long taskId) throws BaseException {
 
-        Optional<User> user = userRepository.findByUserId(userId);
         Task taskFindById = taskRepository.findById(taskId).get();
 
         //유저 일치 확인
-        if (!taskFindById.getUser().equals(user.get())) {
+        if (!taskFindById.getUser().equals(user)) {
             throw new BaseException(INVALID_USER_JWT);
         }
 
-        taskRepository.deleteByUserUserIdAndTaskId(userId, taskId);
+        taskRepository.deleteByUserAndTaskId(user, taskId);
     }
 
     @Override
     @Transactional
-    public PatchTaskDetailRes editTaskDetail(Long userId, PatchTaskDetailReq patchTaskDetailReq, Long taskId) throws BaseException {
-        Optional<User> user = userRepository.findByUserId(userId);
+    public PatchTaskDetailRes editTaskDetail(User user, PutTaskDetailReq putTaskDetailReq, Long taskId) throws BaseException {
         Task task = taskRepository.findById(taskId).get();
+        boolean check = false;
 
         //유저 일치 확인
-        if (!task.getUser().equals(user.get())) {
+        if (!task.getUser().equals(user)) {
             throw new BaseException(INVALID_USER_JWT);
         }
 
-        if(patchTaskDetailReq.getCategoryId() != null && patchTaskDetailReq.getCategoryId() != 0){
-            Category category = categoryRepository.findById(patchTaskDetailReq.getCategoryId())
+        if(putTaskDetailReq.getCategoryId() != null && putTaskDetailReq.getCategoryId() != 0){
+            Category category = categoryRepository.findById(putTaskDetailReq.getCategoryId())
                     .orElseThrow(NotFoundCategoryException::new);
             task.updateCategory(category);
+            check = true;
         }
 
-        if(patchTaskDetailReq.getTitle() != null && !patchTaskDetailReq.getTitle().equals(task.getTitle())){
-            task.updateTitle(patchTaskDetailReq.getTitle());
+        if(putTaskDetailReq.getTitle() != null && !putTaskDetailReq.getTitle().equals(task.getTitle())){
+            task.updateTitle(putTaskDetailReq.getTitle());
         }
 
-        if(patchTaskDetailReq.getTimeStart() != null && !patchTaskDetailReq.getTimeStart().equals(task.getTimeStart())){
+        if(putTaskDetailReq.getTimeStart() != null && !putTaskDetailReq.getTimeStart().equals(task.getTimeStart())){
             // case0. 종료 시간이 없을 때
-            if(patchTaskDetailReq.getTimeEnd() == null && patchTaskDetailReq.getTimeEnd().equals(task.getTimeEnd())){
+            if(putTaskDetailReq.getTimeEnd() == null && putTaskDetailReq.getTimeEnd().equals(task.getTimeEnd())){
                 throw new TimeError4Exception();
             }
 
-            int startTime = Integer.parseInt(patchTaskDetailReq.getTimeStart());
-            int endTime = Integer.parseInt(patchTaskDetailReq.getTimeEnd());
+            int startTime = Integer.parseInt(putTaskDetailReq.getTimeStart());
+            int endTime = Integer.parseInt(putTaskDetailReq.getTimeEnd());
 
             // case1. 시작 시간과 종료시간이 같음
             if(startTime == endTime){
@@ -99,8 +91,8 @@ public class TaskServiceImpl implements TaskService {
             }
 
             // case3. 다른 task와 시간이 겹침
-            Task findStartTime = taskRepository.findByDateAndTimeStart(task.getDate(), patchTaskDetailReq.getTimeStart());
-            Task findEndTime = taskRepository.findByDateAndTimeEnd(task.getDate(),patchTaskDetailReq.getTimeStart());
+            Task findStartTime = taskRepository.findByDateAndTimeStart(task.getDate(), putTaskDetailReq.getTimeStart());
+            Task findEndTime = taskRepository.findByDateAndTimeEnd(task.getDate(), putTaskDetailReq.getTimeStart());
             if(findStartTime != null){
                 throw new TimeError1Exception();
             }
@@ -108,16 +100,17 @@ public class TaskServiceImpl implements TaskService {
                 throw new TimeError1Exception();
             }
 
-            task.updateTime(patchTaskDetailReq.getTimeStart(), patchTaskDetailReq.getTimeEnd());
+            task.updateTime(putTaskDetailReq.getTimeStart(), putTaskDetailReq.getTimeEnd());
+            check = true;
         }
 
-        if (!patchTaskDetailReq.getNotesContent().isEmpty()) {
+        if (putTaskDetailReq.getNotesContent() != null && !putTaskDetailReq.getNotesContent().isEmpty()) {
             HashSet<String> noteContentSet = new HashSet<>();
             task.getNoteList().forEach(note -> {
                 noteContentSet.add(note.getContent());
             });
 
-            patchTaskDetailReq.getNotesContent().forEach(note->{
+            putTaskDetailReq.getNotesContent().forEach(note->{
                 if(!noteContentSet.contains(note)){
                     noteRepository.save(Note.builder()
                             .content(note)
@@ -135,17 +128,20 @@ public class TaskServiceImpl implements TaskService {
                 });
             }
 
+            check = true;
         }
 
-        Task save = taskRepository.save(task);
-        return PatchTaskDetailRes.of(save);
+        if(check){
+            Task save = taskRepository.save(task);
+            return PatchTaskDetailRes.of(save);
+        }else{
+            throw new NoModifiedTaskException();
+        }
     }
 
     @Override
-    public List<GetTasksRes> getTasksByDate(Long userId, String date) {
-        // 유저 확인
-        userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
-        List<Task> tasks = taskRepository.findByUserUserIdAndDate(userId, date);
+    public List<GetTasksRes> getTasksByDate(User user, String date) {
+        List<Task> tasks = taskRepository.findByUserAndDate(user, date);
         List<GetTasksRes> getTasksResList = new ArrayList<>();
         tasks.forEach(task -> {
             getTasksResList.add(GetTasksRes.of(task));
@@ -155,20 +151,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public void checkTask(Long userId, Long taskId){
-        User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
+    public GetTasksRes checkTask(User user, Long taskId){
         Task task = taskRepository.findByTaskIdAndUser(taskId, user).orElseThrow(NotFoundTaskException::new);
         Integer status = 0;
         if(task.getStatus() == 0){
             status = 1;
         }
         task.updateStatus(status);
-        taskRepository.save(task);
+        Task saveTask = taskRepository.save(task);
+        return GetTasksRes.of(saveTask);
     }
 
     @Override
-    public GetTaskRes readTask(Long userId, Long taskId) {
-        User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
+    public GetTaskRes readTask(User user, Long taskId) {
         Task task = taskRepository.findByTaskIdAndUser(taskId, user).orElseThrow(NotFoundTaskException::new);
         return GetTaskRes.of(task);
     }
