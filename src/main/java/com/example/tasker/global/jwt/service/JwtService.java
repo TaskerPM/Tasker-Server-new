@@ -1,5 +1,7 @@
 package com.example.tasker.global.jwt.service;
 
+import com.example.tasker.domain.user.entity.User;
+
 import javax.validation.Valid;
 
 public interface JwtService {
@@ -11,8 +13,5 @@ public interface JwtService {
 
     String callApi();
 
-    String getJwt();
-    Long getUserId();
-
-
+    User getUser();
 }

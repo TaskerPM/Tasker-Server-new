@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ApiModel(description = "카테고리 조회를 위한 객체")
 @Builder
-public class ReadCategoryRes {
+public class GetCategoryRes {
     private Long categoryId;
     private String name;
     private String colorBack;
     private String colorText;
 
-    public static ReadCategoryRes of(Category category){
-        return ReadCategoryRes.builder()
+    public static GetCategoryRes of(Category category){
+        return GetCategoryRes.builder()
                 .categoryId(category.getCategoryId())
                 .name(category.getName())
                 .colorBack(category.getColor().getColorBack())

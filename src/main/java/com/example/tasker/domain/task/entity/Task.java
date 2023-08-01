@@ -50,6 +50,7 @@ public class Task extends BaseTimeEntity {
         this.title = title;
         this.date = date;
         this.user = user;
+        this.status = 0;
     }
 
     public void updateCategory(Category category){

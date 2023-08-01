@@ -24,10 +24,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public String createReport(Long userId,Long taskId, String report) {
-        // 유저 찾기
-        User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
-
+    public String createReport(User user,Long taskId, String report) {
         // 테스크 찾기
         Task task = taskRepository.findById(taskId).orElseThrow();
 
