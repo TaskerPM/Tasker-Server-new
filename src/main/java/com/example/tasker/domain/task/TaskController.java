@@ -1,10 +1,6 @@
 package com.example.tasker.domain.task;
 
-import com.example.tasker.domain.task.dto.GetTasksRes;
-import com.example.tasker.domain.task.dto.PostTaskReq;
-import com.example.tasker.domain.task.dto.PostTaskRes;
 import com.example.tasker.domain.task.dto.*;
-import com.example.tasker.domain.task.exception.NotFoundTaskException;
 import com.example.tasker.domain.task.service.TaskService;
 import com.example.tasker.global.dto.ApplicationResponse;
 import com.example.tasker.global.dto.BaseException;
@@ -12,7 +8,6 @@ import com.example.tasker.global.dto.ErrorResponse;
 import com.example.tasker.global.jwt.service.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
-
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -37,9 +33,9 @@ public class TaskController {
             @ApiResponse(responseCode = "201", description = "성공"),
     })
     @PostMapping("/home/{date}")
-    public ApplicationResponse<PostTaskRes> createTask(@RequestBody @Valid PostTaskReq postTaskReq, @PathVariable("date") String date) {
+    public ApplicationResponse<PostTaskRes> createTask(@RequestBody @Valid PostTaskReq postTaskReq, @PathVariable("date") String date, HttpServletResponse response) {
         Long userId = jwtService.getUserId();
-        return ApplicationResponse.create(taskService.createTask(userId, postTaskReq, date));
+        return ApplicationResponse.create(taskService.createTask(userId, postTaskReq, date, response));
     }
 
     @Operation(summary = "날짜별 Tasks 조회", description = "리스트형, 카테고리형 날짜별 Tasks 조회, Header input : 엑세스 토큰")

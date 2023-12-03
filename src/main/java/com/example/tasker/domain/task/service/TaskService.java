@@ -3,11 +3,12 @@ package com.example.tasker.domain.task.service;
 import com.example.tasker.domain.task.dto.*;
 import com.example.tasker.global.dto.BaseException;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface TaskService {
 
-    PostTaskRes createTask(Long userId, PostTaskReq postTaskReq, String date);
+    PostTaskRes createTask(Long userId, PostTaskReq postTaskReq, String date, HttpServletResponse response);
 
     void deleteTask(Long userId, Long taskId) throws BaseException;
 

@@ -13,16 +13,15 @@ import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.domain.user.exception.NotFoundUserException;
 import com.example.tasker.domain.user.repository.UserRepository;
 import com.example.tasker.global.dto.BaseException;
-import com.example.tasker.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.tasker.global.dto.BaseResponseStatus.INVALID_USER_JWT;
 
@@ -38,7 +37,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public PostTaskRes createTask(Long userId, PostTaskReq postTaskReq, String date) {
+    public PostTaskRes createTask(Long userId, PostTaskReq postTaskReq, String date, HttpServletResponse response) {
         User user = userRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new); // 유저 찾기
         Task save = taskRepository.save(postTaskReq.toEntity(user, date));
         return PostTaskRes.of(save);

@@ -50,7 +50,7 @@ public class UserController {
     })
     @GetMapping("/loginToken")
     public ApplicationResponse<UserIdRes> loginToken(HttpServletResponse response) {
-        return ApplicationResponse.create(userService.loginToken(response));
+            return ApplicationResponse.create(userService.loginToken(response));
     }
 
     /**

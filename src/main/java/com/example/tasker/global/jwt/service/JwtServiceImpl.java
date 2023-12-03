@@ -1,5 +1,6 @@
 package com.example.tasker.global.jwt.service;
 
+import com.example.tasker.domain.user.entity.User;
 import com.example.tasker.domain.user.exception.NotFoundUserException;
 import com.example.tasker.domain.user.repository.UserRefreshTokenRepository;
 import com.example.tasker.domain.user.repository.UserRepository;
@@ -21,6 +22,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -118,6 +120,9 @@ public class JwtServiceImpl implements JwtService {
     // api 호출 시 - 엑세스 토큰 이용 - jwt 반환
     public String callApi() {
         String accessToken = this.resolveAccessToken();
+        System.out.println(this.getNumIdAccess(accessToken));
+        Optional<User> user = userRepository.findByPhoneNumber(this.getNumIdAccess(accessToken));
+        System.out.println(user.get().getUserId());
         if (!this.validateAccessToken(accessToken)) {
             accessToken = this.createAccessJwt(this.getNumIdAccess(accessToken));
         }
@@ -159,7 +164,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Long getUserId() {
         //1. JWT 추출
-        String accessToken = getJwt();
+        String accessToken = this.resolveAccessToken();
         if (accessToken == null || accessToken.length() == 0)
             throw new NotFoundJwtException();
 
